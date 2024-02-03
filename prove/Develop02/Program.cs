@@ -6,7 +6,7 @@ class Program
     {
         Console.WriteLine("Hello Develop02 World!");
 
-        Journal myJournal = new Journal();
+        Journal myJournal = new();
         myJournal.LoadJournal("journal.txt");
 
         int entryNumber = 1; // Change this to the desired entry number
