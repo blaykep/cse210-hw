@@ -1,9 +1,13 @@
 using System;
 
-class Program
+class Program 
 {
-    static void Main(string[] args)
-    {
-        Console.WriteLine("Hello Sandbox World!");
+
+    static void Main(string[] args) {
+        BaldEagle joey = new BaldEagle("Joey");
+        BaldEagle dragon = new BaldEagle("Dragon");
+
+        joey.MakeSound();
+        dragon.MakeSound();
     }
 }
