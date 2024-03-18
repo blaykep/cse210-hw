@@ -1,3 +1,3 @@
-SimpleGoal|test|True
+SimpleGoal|test|False
 EternalGoal|ex|False
-ChecklistGoal|fitness|False
+ChecklistGoal|fit|False

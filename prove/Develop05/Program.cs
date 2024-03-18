@@ -81,6 +81,10 @@ class SimpleGoal : Goal
         this.points = points;
     }
 
+    public SimpleGoal(string name, bool isCompleted) : base(name)
+    {
+    }
+
     public override void DisplayStatus()
     {
         Console.WriteLine($"{name}: {(completed ? "[X]" : "[ ]")}");
@@ -100,6 +104,10 @@ class EternalGoal : Goal
     public EternalGoal(string name, int points) : base(name)
     {
         this.points = points;
+    }
+
+    public EternalGoal(string name, bool isCompleted) : base(name)
+    {
     }
 
     public override void DisplayStatus()
@@ -124,6 +132,10 @@ class ChecklistGoal : Goal
         this.requiredCount = requiredCount;
         this.pointsPerCheck = pointsPerCheck;
         this.currentCount = 0;
+    }
+
+    public ChecklistGoal(string name, bool isCompleted, int v) : base(name)
+    {
     }
 
     public override void DisplayStatus()
@@ -259,32 +271,46 @@ class Tracker
     }
 
     public void LoadGoals()
+{
+    if (File.Exists("goals.txt"))
     {
-        if (File.Exists("goals.txt"))
+        using (StreamReader reader = new StreamReader("goals.txt"))
         {
-            using (StreamReader reader = new StreamReader("goals.txt"))
+            string line;
+            while ((line = reader.ReadLine()) != null)
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                string[] parts = line.Split('|');
+                bool isCompleted;
+                if (!bool.TryParse(parts[2], out isCompleted)) // Parse completion status as boolean
                 {
-                    string[] parts = line.Split('|');
-                    switch (parts[0])
-                    {
-                        case "SimpleGoal":
-                            goals.Add(new SimpleGoal(parts[1], int.Parse(parts[2])));
-                            break;
-                        case "EternalGoal":
-                            goals.Add(new EternalGoal(parts[1], int.Parse(parts[2])));
-                            break;
-                        case "ChecklistGoal":
-                            goals.Add(new ChecklistGoal(parts[1], int.Parse(parts[2]), int.Parse(parts[3])));
-                            break;
-                        default:
-                            Console.WriteLine("Unknown goal type in file.");
-                            break;
-                    }
+                    Console.WriteLine($"Error parsing completion status for goal: {parts[1]}");
+                    continue; // Skip this goal if completion status cannot be parsed
+                }
+                switch (parts[0])
+                {
+                    case "SimpleGoal":
+                        goals.Add(new SimpleGoal(parts[1], isCompleted));
+                        break;
+                    case "EternalGoal":
+                        goals.Add(new EternalGoal(parts[1], isCompleted));
+                        break;
+                    case "ChecklistGoal":
+                        if (parts.Length >= 4)
+                        {
+                            goals.Add(new ChecklistGoal(parts[1], isCompleted, int.Parse(parts[3])));
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Error parsing checklist goal: {parts[1]} - Not enough elements.");
+                        }
+                        //goals.Add(new ChecklistGoal(parts[1], isCompleted, int.Parse(parts[3])));
+                        break;
+                    default:
+                        Console.WriteLine("Unknown goal type in file.");
+                        break;
                 }
             }
         }
     }
+}
 }
